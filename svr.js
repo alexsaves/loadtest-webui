@@ -62,6 +62,11 @@ if (cluster.isMaster) {
   });
 
   /**
+   * Assets
+   */
+  app.use(express.static('dist'));
+
+  /**
    * Root
    */
   app.get('/',
@@ -70,8 +75,7 @@ if (cluster.isMaster) {
       req.on('timeout', function () {
         res.send("Error");
       });
-
-      //res.send(statusHandler.getStatusPage());
+      res.redirect('/index.html');
     });
 
   /**
