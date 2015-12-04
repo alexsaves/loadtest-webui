@@ -26,8 +26,8 @@ progressor.prototype.update = function() {
 
 
     var turl = currentTest.results.testInfo.url;
-    if (turl.length > 100) {
-      turl = turl.substr(0, 100) + "...";
+    if (turl.length > 75) {
+      turl = turl.substr(0, 73) + "...";
     }
 
     var rph = Math.round((tr.totalRequests / actualSecs) * (60 * 60));
