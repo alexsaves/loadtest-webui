@@ -30,6 +30,9 @@ You can start a watcher with ``gulp watch``.
 ###Password Protection
 Since this is a web front-end and you may want to protect your test hardware, specify a password in the ``package.json`` file under ``setts.pw``.
 
+###Packaging for AWS Elastic Beanstalk
+Perform the dev installation as described above (``npm install --dev``), then run ``gulp zip``. This will put a zip package inside the ``out/`` folder.
+
 ###Screenshots
 Test console:
 ![Control UI](https://raw.githubusercontent.com/alexsaves/loadtest-webui/master/docs/images/testconsole.png)

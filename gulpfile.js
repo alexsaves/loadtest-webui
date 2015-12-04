@@ -27,7 +27,9 @@ var gulp = require('gulp'),
   notifier = require('node-notifier'),
   minifyHTML = require('gulp-minify-html'),
   watch = require('gulp-watch'),
-  batch = require('gulp-batch');
+  batch = require('gulp-batch'),
+  gulpIgnore = require('gulp-ignore'),
+  zip = require('gulp-zip');
 
 // Set some defaults about what mode we are in
 var isProd = false,
@@ -158,6 +160,24 @@ gulp.task('watch', function () {
  * Production task. Note: because this task has the word "prod" in it, minification is turned on automatically
  */
 gulp.task('prod', ['default']);
+
+/**
+ * Build everything prod mode and copy to preview
+ */
+gulp.task('zip', function (cb) {
+
+  var vwr = pjson.version.replace(/\./g, '_'),
+    zipname = 'loadtest' + vwr + '.zip';
+
+  console.log("Compressing out/" + zipname + "..");
+
+  // Pull everything and put it in the preview folder
+  gulp.src(['**/*', '!node_modules/**/*', '!build/**/*', '!**/*.zip'])
+    .pipe(gulpIgnore.exclude('node_modules'))
+    .pipe(zip(zipname))
+    .pipe(gulp.dest("out/"));
+
+});
 
 /**
  * Signal a notification
