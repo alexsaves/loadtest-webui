@@ -1,6 +1,6 @@
 {
   "name": "loadtest-webui",
-  "version": "1.0.8",
+  "version": "1.1.1",
   "description": "A web front-end for load testing. Perfect for running on Elastic Beanstalk.",
   "main": "app.js",
   "scripts": {
