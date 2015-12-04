@@ -2,7 +2,7 @@
 
 .starter-template {
   margin-top: 5em;
-  margin-bottom: 5em;
+  margin-bottom: 4em;
 }
 
 .sublead {
@@ -11,4 +11,12 @@
 
 #currentResults {
   margin-left: 1em;
+}
+
+#ver {
+  position: fixed;
+  color: cadetblue;
+  font-size: 10px;
+  right: 2px;
+  bottom: 2px;
 }

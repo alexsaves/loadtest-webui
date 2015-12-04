@@ -181,6 +181,8 @@ if (cluster.isMaster) {
         res.send("Error");
       });
       res.contentType('application/json');
+      masterstatus.lastMsg.ver = pjson.version;
+      masterstatus.lastMsg.name = pjson.name;
       res.send(JSON.stringify(masterstatus.lastMsg));
     });
 

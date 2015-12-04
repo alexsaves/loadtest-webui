@@ -24,14 +24,23 @@ progressor.prototype.update = function() {
     str.push("Max latency: " + (Math.round(tr.maxLatencyMs / 100) / 10) + "s");
     $("#currentResults").html(str.join(', '));
 
+
+    var turl = currentTest.results.testInfo.url;
+    if (turl.length > 100) {
+      turl = turl.substr(0, 100) + "...";
+    }
+
+    var rph = Math.round((tr.totalRequests / actualSecs) * (60 * 60));
+
     var finalTable = [];
-    finalTable.push("<table class=\"table table-condensed\"><tr><th width=\"25%\">Property</th><th>Result</th></tr>");
-    finalTable.push("<tr class='info'><td>URL</td><td>" + currentTest.results.testInfo.url + "</td></tr>");
-    finalTable.push("<tr class='success'><td>Requests</td><td>" + tr.totalRequests + "</td></tr>");
-    finalTable.push("<tr class=\"danger\"><td>Errors</td><td>" + tr.totalErrors + "</td></tr>");
-    finalTable.push("<tr><td>Duration</td><td>" + actualSecs + "</td></tr>");
-    finalTable.push("<tr><td>Avg latency</td><td>" + (Math.round(tr.meanLatencyMs / 10) / 100) + "s</td></tr>");
-    finalTable.push("<tr><td>Max latency</td><td>" + (Math.round(tr.maxLatencyMs / 10) / 100) + "s</td></tr>");
+    finalTable.push("<table class=\"table table-condensed\"><tr><th width=\"30%\">Property</th><th>Result</th></tr>");
+    finalTable.push("<tr class='info'><td>URL</td><td>" + turl + "</td></tr>");
+    finalTable.push("<tr class='success'><td>Requests</td><td>" + numeral(tr.totalRequests).format('0,0') + "</td></tr>");
+    finalTable.push("<tr class=\"danger\"><td>Errors</td><td>" + numeral(tr.totalErrors).format('0,0') + "</td></tr>");
+    finalTable.push("<tr class='info'><td>Est. Requests per hour</td><td>" + numeral(rph).format('0,0') + " requests</td></tr>");
+    finalTable.push("<tr><td>Test Duration</td><td>" + numeral(actualSecs).format('0,0') + "s</td></tr>");
+    finalTable.push("<tr><td>Avg response latency</td><td>" + (Math.round(tr.meanLatencyMs / 10) / 100) + "s</td></tr>");
+    finalTable.push("<tr><td>Max response latency</td><td>" + (Math.round(tr.maxLatencyMs / 10) / 100) + "s</td></tr>");
     finalTable.push("</table>");
     $("#testResults").html(finalTable.join(''));
 

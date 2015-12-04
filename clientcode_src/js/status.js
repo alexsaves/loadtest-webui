@@ -17,6 +17,7 @@ var statusChecker = function() {
           }
           currentTest.results = dmsg;
           ctx.checking = false;
+          $("#ver").html(dmsg.name + ' ' + dmsg.ver);
         }
       });
     }
