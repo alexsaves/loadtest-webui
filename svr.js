@@ -64,9 +64,9 @@ if (cluster.isMaster) {
 
         var options = {
           url: msgobj.url,
-          requestsPerSecond: Math.min(350, rps),
+          requestsPerSecond: Math.min(300, rps),
           maxSeconds: secs,
-          timeout: 5000,
+          timeout: 10000,
           concurrency: 10,
           statusCallback: statusCallback
         };
