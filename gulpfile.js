@@ -25,7 +25,9 @@ var gulp = require('gulp'),
   beautify = require('js-beautify').js_beautify,
   archiver = require('archiver'),
   notifier = require('node-notifier'),
-  minifyHTML = require('gulp-minify-html');
+  minifyHTML = require('gulp-minify-html'),
+  watch = require('gulp-watch'),
+  batch = require('gulp-batch');
 
 // Set some defaults about what mode we are in
 var isProd = false,
@@ -141,6 +143,15 @@ gulp.task('default', function (cb) {
   runSequence('clean',
     'js', 'css', 'html', 'assets',
     cb);
+});
+
+/**
+ * Watch everything
+ */
+gulp.task('watch', function () {
+  watch('clientcode_src/**/*', batch(function (events, done) {
+    gulp.start('default', done);
+  }));
 });
 
 /**

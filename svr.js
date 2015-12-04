@@ -4,10 +4,12 @@
  */
 var pjson = require('./lib/environ'),
   status = require('./lib/status'),
+  teststate = require('./lib/teststate'),
   express = require('express'),
   cluster = require('cluster'),
   bodyParser = require('body-parser'),
-  timeout = require('connect-timeout');
+  timeout = require('connect-timeout'),
+  url = require('url');
 
 // Set the time zone
 process.env.TZ = pjson.setts.timeZone;
@@ -21,12 +23,87 @@ if (cluster.isMaster) {
   // Count the machine's CPUs
   var cpuCount = require('os').cpus().length;
 
+  // The loadtest
+  var loadtest = require('loadtest'),
+    latesttest = null,
+    testinfo = {};
+
+  // Set up the state
+  var thestate = new teststate();
+
   // Tell the world
   console.log("Starting " + pjson.name + " " + pjson.version + " on " + cpuCount + " CPUs - Connection timeout set to " + pjson.setts.timeout + "..");
 
   // Fork the server
+  var masterStatus = {
+    status: 'idle',
+    zone: 'controlform'
+  };
+  var workers = [];
   for (var i = 0; i < cpuCount; i += 1) {
-    cluster.fork();
+    var worker = cluster.fork();
+    workers.push(worker);
+    // Receive messages from this worker and handle them in the master process.
+    worker.on('message', function (msgobj) {
+      console.log("Recieved loadtest instructions from worker: ", msgobj);
+      if (msgobj.command == 'begin') {
+        var rps = parseInt(msgobj.rps),
+          secs = parseInt(msgobj.secs);
+        var targ = url.parse(msgobj.url);
+        //console.log("Targeting ", targ);
+
+        testinfo = msgobj;
+
+        function statusCallback(latency, result) {
+
+          masterStatus.testResults = latency;
+          masterStatus.testInfo = testinfo;
+
+          //console.log('Current latency %j, result %j', latency, result);
+        }
+
+        var options = {
+          url: msgobj.url,
+          requestsPerSecond: rps,
+          maxSeconds: secs,
+          statusCallback: statusCallback
+        };
+
+        masterStatus.status = 'loadtesting';
+        masterStatus.zone = 'progressform';
+
+        console.log("Starting test with options ", options);
+
+        latesttest = loadtest.loadTest(options, function (error) {
+          if (error) {
+            return console.error('Got an error: %s', error);
+          }
+          console.log('Tests run successfully');
+          masterStatus.status = 'complete';
+          masterStatus.zone = 'testreportform';
+          latesttest = null;
+        });
+
+      } else if (msgobj.command == 'reset') {
+        if (latesttest) {
+          latesttest.stop();
+          latesttest = null;
+        }
+
+        masterStatus.status = 'idle';
+        masterStatus.zone = 'controlform';
+        if (masterStatus.testResults) {
+          delete masterStatus.testResults;
+        }
+      }
+    });
+
+    // Continually update the message
+    setInterval(function () {
+      for (var i = 0; i < workers.length; i++) {
+        workers[i].send(masterStatus);
+      }
+    }, 1000);
   }
 
 // Code to run if we're in a worker process
@@ -40,12 +117,28 @@ if (cluster.isMaster) {
     timeoutProps = {
       respond: false
     },
-    statusHandler = new status(pjson);
+    statusHandler = new status(pjson),
+    masterstatus = {
+      lastMsg: {
+        status: "initializing",
+        zone: "initializingarea"
+      }
+    };
+
+  // Receive messages from the master process.
+  process.on('message', function (msg) {
+    masterstatus.lastMsg = msg;
+  });
 
   /**
    * Set a size limit
    */
   app.use(bodyParser.json({limit: '500mb'}));
+
+  /**
+   * Accept url encoded
+   */
+  app.use(bodyParser.urlencoded({extended: false}));
 
   /**
    * Set the port to use the AWS port or 3000
@@ -79,6 +172,19 @@ if (cluster.isMaster) {
     });
 
   /**
+   * Get job status
+   */
+  app.get('/jobstatus',
+    timeout(pjson.setts.timeout, timeoutProps),
+    function (req, res, next) {
+      req.on('timeout', function () {
+        res.send("Error");
+      });
+      res.contentType('application/json');
+      res.send(JSON.stringify(masterstatus.lastMsg));
+    });
+
+  /**
    * Status page (same as root)
    */
   app.get('/status',
@@ -88,6 +194,58 @@ if (cluster.isMaster) {
         res.send("Error");
       });
       res.send(statusHandler.getStatusPage());
+    });
+
+  /**
+   * Cancel test
+   */
+  app.post('/startover',
+    timeout(pjson.setts.timeout, timeoutProps),
+    function (req, res, next) {
+      req.on('timeout', function () {
+        res.send(JSON.stringify({msg: "Timeout"}));
+      });
+
+      res.contentType('application/json');
+      res.send(JSON.stringify({success: true}));
+
+      process.send({command: 'reset'});
+    });
+
+  /**
+   * Begin test
+   */
+  app.post('/begin',
+    timeout(pjson.setts.timeout, timeoutProps),
+    function (req, res, next) {
+      req.on('timeout', function () {
+        res.send(JSON.stringify({msg: "Timeout"}));
+      });
+
+      res.contentType('application/json');
+
+      if (!req.body.pw || req.body.pw != pjson.setts.pw) {
+        // Respond
+        res.send(JSON.stringify({
+          success: false,
+          msg: "Wrong password."
+        }));
+      } else if (url.parse(req.body.url).protocol == null) {
+        res.send(JSON.stringify({
+          success: false,
+          msg: "Unable to parse URL."
+        }));
+      } else {
+        // Send it
+        req.body.command = 'begin';
+
+        process.send(req.body);
+
+        // Respond
+        res.send(JSON.stringify({
+          success: true
+        }));
+      }
     });
 
   /**

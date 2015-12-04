@@ -1,2 +1,14 @@
 @import "vars";
-@import "reset";
+
+.starter-template {
+  margin-top: 5em;
+  margin-bottom: 5em;
+}
+
+.sublead {
+  color: darkcyan;
+}
+
+#currentResults {
+  margin-left: 1em;
+}
