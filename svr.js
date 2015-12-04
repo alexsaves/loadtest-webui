@@ -45,7 +45,7 @@ if (cluster.isMaster) {
     workers.push(worker);
     // Receive messages from this worker and handle them in the master process.
     worker.on('message', function (msgobj) {
-      console.log("Recieved loadtest instructions from worker: ", msgobj);
+      //console.log("Recieved loadtest instructions from worker: ", msgobj);
       if (msgobj.command == 'begin') {
         var rps = parseInt(msgobj.rps),
           secs = parseInt(msgobj.secs);
@@ -72,13 +72,13 @@ if (cluster.isMaster) {
         masterStatus.status = 'loadtesting';
         masterStatus.zone = 'progressform';
 
-        console.log("Starting test with options ", options);
+        //console.log("Starting test with options ", options);
 
         latesttest = loadtest.loadTest(options, function (error) {
           if (error) {
             return console.error('Got an error: %s', error);
           }
-          console.log('Tests run successfully');
+          //console.log('Tests run successfully');
           masterStatus.status = 'complete';
           masterStatus.zone = 'testreportform';
           latesttest = null;
