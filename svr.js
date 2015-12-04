@@ -66,6 +66,8 @@ if (cluster.isMaster) {
           url: msgobj.url,
           requestsPerSecond: Math.min(350, rps),
           maxSeconds: secs,
+          timeout: 5000,
+          concurrency: 10,
           statusCallback: statusCallback
         };
 
