@@ -31,6 +31,7 @@ progressor.prototype.update = function() {
     }
 
     var rph = Math.round((tr.totalRequests / actualSecs) * (60 * 60));
+    var rpd = Math.round((tr.totalRequests / actualSecs) * (60 * 60 * 24));
 
     var finalTable = [];
     finalTable.push("<table class=\"table table-condensed\"><tr><th width=\"30%\">Property</th><th>Result</th></tr>");
@@ -38,9 +39,10 @@ progressor.prototype.update = function() {
     finalTable.push("<tr class='success'><td>Requests</td><td>" + numeral(tr.totalRequests).format('0,0') + "</td></tr>");
     finalTable.push("<tr class=\"danger\"><td>Errors</td><td>" + numeral(tr.totalErrors).format('0,0') + "</td></tr>");
     finalTable.push("<tr class='info'><td>Est. Requests per hour</td><td>" + numeral(rph).format('0,0') + " requests</td></tr>");
-    finalTable.push("<tr><td>Test Duration</td><td>" + numeral(actualSecs).format('0,0') + "s</td></tr>");
-    finalTable.push("<tr><td>Avg response latency</td><td>" + (Math.round(tr.meanLatencyMs / 10) / 100) + "s</td></tr>");
-    finalTable.push("<tr><td>Max response latency</td><td>" + (Math.round(tr.maxLatencyMs / 10) / 100) + "s</td></tr>");
+    finalTable.push("<tr class='info'><td>Est. Requests per day</td><td>" + numeral(rpd).format('0,0') + " requests</td></tr>");
+    finalTable.push("<tr><td>Test Duration</td><td>" + numeral(Math.round(actualSecs * 10) / 10).format('0,0') + " seconds</td></tr>");
+    finalTable.push("<tr><td>Avg response latency</td><td>" + (Math.round(tr.meanLatencyMs / 10) / 100) + " seconds</td></tr>");
+    finalTable.push("<tr><td>Max response latency</td><td>" + (Math.round(tr.maxLatencyMs / 10) / 100) + " seconds</td></tr>");
     finalTable.push("</table>");
     $("#testResults").html(finalTable.join(''));
 
