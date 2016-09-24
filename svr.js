@@ -102,7 +102,7 @@ var runtestfunction = function (msgobj) {
     masterStatus.status = 'loadtesting';
     masterStatus.zone = 'progressform';
 
-    console.log("Starting test with options ", options);
+    //console.log("Starting test with options ", options);
 
     latesttest = loadtest.loadTest(options, function (error) {
       if (error) {
