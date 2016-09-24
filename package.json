@@ -1,10 +1,10 @@
 {
   "name": "loadtest-webui",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "A web front-end for load testing. Perfect for running on Elastic Beanstalk.",
-  "main": "app.js",
+  "main": "svr.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node svr.js"
   },
   "repository": {
     "type": "git",

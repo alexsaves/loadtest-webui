@@ -4,6 +4,7 @@ var ControlForm = function(el) {
   var vals = {},
     passing = true,
     baddies = [];
+
   this.els.each(function(idx, el) {
     vals[el.id] = $.trim(el.value);
     if (el.type == "number") {

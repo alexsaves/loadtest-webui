@@ -7,6 +7,7 @@ $(document).ready(function() {
   $("#starttestbutton").click(function(e) {
     e.stopPropagation();
     e.preventDefault();
+    serializeFormToMemory($("#controlfrm"));
     var cform = new ControlForm($("#controlfrm")[0]);
   });
 
@@ -39,4 +40,24 @@ $(document).ready(function() {
 
   // Fire up the progressor
   var prog = new progressor();
+
+  /**
+   * Select a verb
+   * @param verb
+   */
+  var selectHTTPVerb = function(verb) {
+    verb = (verb || 'get').toUpperCase();
+    $("#selectedVerbLabel").html(verb);
+    $("#selectedVerb").val(verb);
+    if (verb.toUpperCase() == 'POST') {
+      $("#formBodyArea").css({display: "block"});
+    } else {
+      $("#formBodyArea").css({display: "none"});
+    }
+  };
+  restoreFormToMemory($("#controlfrm"));
+  selectHTTPVerb($("#selectedVerb").val());
+  $("#verbSelector a").mousedown(function(){
+    selectHTTPVerb(this.innerHTML);
+  });
 });

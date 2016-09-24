@@ -66,6 +66,31 @@
                            placeholder="https://yoururl.com/something?data=true">
                 </div>
                 <br>
+                <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon3">Headers (JSON)</span>
+                    <input type="text" class="form-control" id="headers" aria-describedby="urldesc"
+                           placeholder="{&quot;Content-Type&quot;: &quot;application/json&quot;}">
+                </div>
+                <br>
+                <div class="input-group">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            HTTP Verb
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" id="verbSelector">
+                            <li><a href="#">GET</a></li>
+                            <li><a href="#">POST</a></li>
+                            <li><a href="#">DELETE</a></li>
+                        </ul> &nbsp;&nbsp;<span id="selectedVerbLabel"></span><input type="hidden" name="selectedVerb" id="selectedVerb" value="GET">
+                    </div>
+                </div>
+                <br>
+                <div class="input-group" style="width:100%; display:none;" id="formBodyArea">
+                    Form Body:
+                    <textarea class="form-control" id="formbody" name="formbody" style="height:100px; margin-bottom:20px;"></textarea>
+                </div>
+                <br>
                 <label for="rps" id="rpsdesc">Requests per second (Recommended max: 200)</label>
 
                 <div class="input-group">
